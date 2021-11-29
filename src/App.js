@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Task from './Task.js';
 import ToDoForm from './ToDoForm.js';
 import './App.scss';
