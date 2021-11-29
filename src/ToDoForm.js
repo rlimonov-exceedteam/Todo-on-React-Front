@@ -1,7 +1,18 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-function ToDoForm({ addTask }) {
+const ToDoForm = ({ tasks, setTasks }) => {
   const [userInput, setUserInput] = useState('');
+
+  const addTask = (userInput) => {
+    if (userInput) {
+      const newItem = {
+        id: Math.random().toString(36).substr(2,9),
+        text: userInput,
+        isCheck: false
+      }
+      setTasks([newItem, ...tasks]);
+    }
+  }
   
   const handleChange = (e) => {
     setUserInput(e.currentTarget.value);
@@ -20,14 +31,17 @@ function ToDoForm({ addTask }) {
       </div>
       <br />
       <div className="Input input-group">
-        <textarea className="form-control" 
-                  aria-label="With textarea"
-                  onChange={handleChange}
-                  value={userInput}>
-        </textarea>
-        <button type="submit" 
-                className="btn btn-primary"
-                onClick={handleSubmit}>
+        <textarea 
+          className="form-control" 
+          aria-label="With textarea"
+          onChange={(e) => handleChange(e)}
+          value={userInput}
+        />
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          onClick={(e) => handleSubmit(e)}
+        >
           Submit
         </button>
       </div>

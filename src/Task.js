@@ -1,46 +1,64 @@
 import React from 'react';
-import EditButton from './EditButton'
+import EditButton from './EditButton';
 import { useState } from 'react';
 
-function Task({ task, tasks, toggleTask, removeTask }) {
+const Task = ({ task, index, toggleTask, removeTask }) => {
   const [flag, setFlag] = useState(true);
+  const [text, setText] = useState(task.text)
+  const { id, isCheck } = task;
 
   const checkFlag = (flag) => {
     setFlag(flag);
   }
 
-  const undoTask = (e) => {
-    const todo = e.target.parentElement.parentElement.parentElement.parentElement;
-    todo.children[0].children[0].children[0].value = task.task;
+  const undoTask = () => {
+    setText(task.text);
     checkFlag(true);
   }
 
+  const updateTask = () => {
+    task.text = text;
+    checkFlag(true);
+  }
+
+  const handleChangeText = (e) => {
+    setText(e.currentTarget.value);
+  }
+
   return (
-    <div className="Task-text" key={task.id}>
+    <div className="Task-text" key={id}>
       <form>
         <div className="input-group">
-          <textarea className="form-control"
-                    style={task.isCheck ? {textDecorationLine: 'line-through'} : {}}
-                    defaultValue={task.task}
-                    disabled={flag}
-                    >
-          </textarea>
+          <textarea 
+            className={`form-control ${isCheck ? 'checked' : ''}`}
+            value={text}
+            onChange={(e) => handleChangeText(e)}
+            disabled={flag}
+          />
           <span>
-            {task.isCheck ? '✕' : ''}
+            {isCheck && '✕'}
           </span>
         </div>
       </form>
       <div className="buttons">
-        <button className="btn btn-primary"
-                onClick={() => toggleTask(task.id)}
-                >
-          {task.isCheck ? 'In To-Do' : 'Finished'} 
+        <button 
+          className="btn btn-primary"
+          onClick={() => toggleTask(index)}
+        >
+          {isCheck ? 'In To-Do' : 'Finished'} 
         </button>
-        <button className="btn btn-primary"
-                onClick={() => removeTask(task.id)}>
+        <button 
+          className="btn btn-primary"
+          onClick={() => removeTask(id)}
+        >
           Delete
         </button>
-        <EditButton tasks={tasks} id={task.id} undoTask={undoTask} checkFlag={checkFlag} />
+        <EditButton 
+          currentTask={task} 
+          undoTask={undoTask} 
+          checkFlag={checkFlag} 
+          updateTask={updateTask}
+        />
       </div>
     </div>
   );

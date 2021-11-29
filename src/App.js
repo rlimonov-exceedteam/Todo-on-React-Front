@@ -1,51 +1,41 @@
 import { useState } from 'react';
-import Task from './Task.js' 
+import Task from './Task.js';
 import ToDoForm from './ToDoForm.js';
-import './App.scss'
+import './App.scss';
 
-function App() {
+const App = () => {
 	const [tasks, setTasks] = useState([])
-
-  const addTask = (userInput) => {
-    if(userInput) {
-      const newItem = {
-        id: Math.random().toString(36).substr(2,9),
-        task: userInput,
-        isCheck: false
-      }
-      setTasks([...tasks, newItem])
-    }
-  }
+  console.log(tasks)
 
   const removeTask = (id) => {
-    setTasks([...tasks.filter((task) => task.id !== id)])
+    setTasks([...tasks.filter((task) => task.id !== id)]);
   }
 
-  const handleToggle = (id) => {
+  const handleToggle = (index) => {
     setTasks([
-      ...tasks.map((task) => 
-        task.id === id ? { ...task, isCheck: !task.isCheck } : {...task }
-      ).sort((prev, next) => {
-        if (!prev.isCheck && next.isCheck) return -1;
-        else if (prev.isCheck && !next.isCheck) return 1;
-        else return 0;
-      })
+      ...tasks.map((task, i) => 
+        i === index ? { ...task, isCheck: !task.isCheck } : {...task }
+      ).sort((prev, next) => (!prev.isCheck && next.isCheck) ? -1 : 1)
     ])
   }
 
   return (
     <div className="App">
-      <ToDoForm addTask={addTask} />
+      <ToDoForm 
+        tasks={tasks} 
+        setTasks={setTasks} 
+      />
       <div className="wrapper">
-        {tasks.map((elem) => {
+        {tasks.map((elem, i) => {
           return (
             <Task
               task={elem}
               tasks={tasks}
               key={elem.id}
+              index={i}
               toggleTask={handleToggle}
               removeTask={removeTask}
-              />
+            />
           );
         })}
       </div>
