@@ -1,6 +1,6 @@
 import React from 'react';
-import EditButton from './EditButton';
 import { useState } from 'react';
+import EditButton from './EditButton';
 
 const Task = ({ task, index, toggleTask, removeTask }) => {
   const [flag, setFlag] = useState(true);
