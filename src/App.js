@@ -5,7 +5,6 @@ import './App.scss';
 
 const App = () => {
 	const [tasks, setTasks] = useState([])
-  console.log(tasks)
 
   const removeTask = (id) => {
     setTasks([...tasks.filter((task) => task.id !== id)]);
