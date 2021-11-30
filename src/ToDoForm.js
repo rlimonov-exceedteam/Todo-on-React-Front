@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-
 const ToDoForm = ({ tasks, setTasks }) => {
   const [userInput, setUserInput] = useState('');
 
@@ -12,10 +11,11 @@ const ToDoForm = ({ tasks, setTasks }) => {
         isCheck: false,
       }).then(res => {
         if (res.statusText === 'OK') {
+          const { _id, text, isCheck } = res.data
           const newItem = {
-            _id: res.data._id,
-            text: res.data.text,
-            isCheck: res.data.isCheck
+            _id,
+            text,
+            isCheck
             }
           setTasks([...tasks, newItem]);
         } else {
