@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
 
 const ToDoForm = ({ tasks, setTasks }) => {
   const [userInput, setUserInput] = useState('');
 
-  const addTask = (userInput) => {
+  const addTask = async (userInput) => {
     if (userInput) {
-      const newItem = {
-        id: Math.random().toString(36).substr(2,9),
+        await axios.post('http://localhost:8000/createTask', {
         text: userInput,
-        isCheck: false
-      }
-      setTasks([newItem, ...tasks]);
+        isCheck: false,
+      }).then(res => {
+        if (res.statusText === 'OK') {
+          const newItem = {
+            _id: res.data._id,
+            text: res.data.text,
+            isCheck: res.data.isCheck
+            }
+          setTasks([...tasks, newItem]);
+        } else {
+          alert(`Error HTTP: ${res.status}`);
+        }
+      });
     }
   }
   
