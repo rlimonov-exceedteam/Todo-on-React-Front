@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Task from './Task.js';
 import ToDoForm from './ToDoForm.js';
+import axios from 'axios';
 import './App.scss';
 
 const App = () => {
-	const [tasks, setTasks] = useState([])
+	const [tasks, setTasks] = useState([]);
 
-  const removeTask = (id) => {
-    setTasks([...tasks.filter((task) => task.id !== id)]);
-  }
+  useEffect(async () => {
+    await axios.get('http://localhost:8000/allTasks').then(res => {
+      if (res.statusText === 'OK') {
+        const result = res.data.data;
+        setTasks([...result.sort((prev, next) => (!prev.isCheck && next.isCheck) ? -1 : 1)]);
+      } else {
+        alert(`Error HTTP: ${res.status}`);
+      }
+    });
+  }, []);
 
-  const handleToggle = (index) => {
-    setTasks([
-      ...tasks.map((task, i) => 
-        i === index ? { ...task, isCheck: !task.isCheck } : {...task }
-      ).sort((prev, next) => (!prev.isCheck && next.isCheck) ? -1 : 1)
-    ])
-  }
 
   return (
     <div className="App">
@@ -29,11 +30,10 @@ const App = () => {
           return (
             <Task
               task={elem}
-              tasks={tasks}
               key={elem.id}
               index={i}
-              toggleTask={handleToggle}
-              removeTask={removeTask}
+              tasks={tasks}
+              setTasks={setTasks}
             />
           );
         })}
