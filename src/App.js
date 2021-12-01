@@ -52,6 +52,8 @@ const App = () => {
               key={currentTask._id}
               setCurrentTask={setCurrentTask}
               currentTask={currentTask}
+              disabled={false}
+              btnsFlag={true}
             />
           </div>
         </Route>

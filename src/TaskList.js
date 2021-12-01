@@ -2,8 +2,7 @@ import Task from './Task.js';
 
 const TaskList = ({ 
   tasks, 
-  setCurrentTask, 
-  currentTask 
+  setCurrentTask
 }) => {
 
   return (
