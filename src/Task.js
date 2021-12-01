@@ -1,64 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import EditButton from './EditButton';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
-const Task = ({ task, index, tasks, setTasks }) => {
-  const [flag, setFlag] = useState(true);
+const Task = ({ 
+  task, 
+  setCurrentTask,
+  disabled,
+  btnsFlag
+}) => {
   const [text, setText] = useState(task.text);
-  const { _id, isCheck } = task;
+  const { _id } = task;
+  const history = useHistory();
 
-  useEffect(() => {
-    setText(task.text);
-  }, [task.text]);
-
-  const checkFlag = (flag) => {
-    setFlag(flag);
+  const openEdit = () => {
+    setCurrentTask(task);
+    localStorage.setItem('currentTask', JSON.stringify(task));
+    history.push(`/edit/${_id}`);
   }
 
   const undoTask = () => {
     setText(task.text);
-    checkFlag(true);
   }
 
-  const updateTask = async (_id) => {
+  useEffect(async () => {
     await axios.patch('http://localhost:8000/updateTask', {
       text,
       _id
     }).then(res => {
       if (res.statusText === 'OK') {
         task.text = text;
-        checkFlag(true);
       } else {
         alert(`Error HTTP: ${res.status}`);
       }
     });
-  }
+  }, [task.text]);
 
-  const removeTask = async (_id) => {
-    await axios.delete(`http://localhost:8000/deleteTask?_id=${_id}`).then(res => {
-      if (res.statusText === 'OK') {
-        setTasks([...tasks.filter((task) => task._id !== _id)]);
-      } else {
-        alert(`Error HTTP: ${res.status}`);
-      }
-    });
-  }
-
-  const handleToggle = async (index) => {
-    await axios.patch('http://localhost:8000/updateTask', {
-      isCheck: !isCheck,
-      _id
-    }).then(res => {
-      if (res.statusText === 'OK') {
-        setTasks([
-          ...tasks.map((task, i) => 
-            i === index ? { ...task, isCheck: !task.isCheck } : {...task }
-          ).sort((prev, next) => (!prev.isCheck && next.isCheck) ? -1 : 1)
-        ])
-      } else {
-        alert(`Error HTTP: ${res.status}`);
-      }
-    })
+  const updateTask = async () => {
+    task.text = text;
+    setText(task.text);
   }
 
   const handleChangeText = (e) => {
@@ -70,35 +49,47 @@ const Task = ({ task, index, tasks, setTasks }) => {
       <form>
         <div className="input-group">
           <textarea 
-            className={`form-control ${isCheck ? 'checked' : ''}`}
+            className='form-control'
             value={text}
             onChange={(e) => handleChangeText(e)}
-            disabled={flag}
+            disabled={disabled}
           />
-          <span>
-            {isCheck && '✕'}
-          </span>
         </div>
       </form>
-      <div className="buttons">
-        <button 
-          className="btn btn-primary"
-          onClick={() => handleToggle(index)}
-        >
-          {isCheck ? 'In To-Do' : 'Finished'} 
-        </button>
-        <button 
-          className="btn btn-primary"
-          onClick={() => removeTask(_id)}
-        >
-          Delete
-        </button>
-        <EditButton 
-          currentTask={task} 
-          undoTask={undoTask} 
-          checkFlag={checkFlag} 
-          updateTask={updateTask}
-        />
+      <div className="buttons">  
+        {
+          !btnsFlag && 
+            <button 
+              className="btn btn-primary edit-btn"
+              onClick={() => openEdit()}
+            >
+              Edit
+            </button>
+        }
+        { 
+          btnsFlag && 
+          <Link to="/mainPage">
+            <div className="ok-undo">
+              <button 
+                className="btn btn-primary ok-undo" 
+                onClick={() => updateTask()}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2" viewBox="0 0 16 16">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>
+              </button>
+              <button 
+                className="btn btn-primary ok-undo" 
+                onClick={() => undoTask()}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+                  <path fillRule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+                </svg>
+              </button>
+            </div>
+          </Link>
+        }
       </div>
     </div>
   );

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import Task from './Task.js';
+import { 
+  Switch, 
+  Route, 
+  Redirect
+} from 'react-router-dom';
+import TaskList from './TaskList.js';
 import ToDoForm from './ToDoForm.js';
+import Task from './Task.js'
 import axios from 'axios';
 import './App.scss';
 
 const App = () => {
 	const [tasks, setTasks] = useState([]);
+
+  const fromStorage = () => {
+    return JSON.parse(localStorage.getItem('currentTask'));
+  }
+
+  const [currentTask, setCurrentTask] = useState(fromStorage() || {});
 
   useEffect(async () => {
     await axios.get('http://localhost:8000/allTasks').then(res => {
@@ -18,26 +30,35 @@ const App = () => {
     });
   }, []);
 
-
   return (
     <div className="App">
       <ToDoForm 
         tasks={tasks} 
         setTasks={setTasks} 
       />
-      <div className="wrapper">
-        {tasks.map((elem, i) => {
-          return (
+      <Switch>
+        <Route path="/mainPage/">
+          <TaskList
+            tasks={tasks}                    
+            setTasks={setTasks}
+            setCurrentTask={setCurrentTask}
+            currentTask={currentTask}
+          />
+        </Route>
+        <Route path="/edit/:_id">
+          <div className="wrapper">
             <Task
-              task={elem}
-              key={elem.id}
-              index={i}
-              tasks={tasks}
-              setTasks={setTasks}
+              task={currentTask}
+              key={currentTask._id}
+              setCurrentTask={setCurrentTask}
+              currentTask={currentTask}
+              disabled={false}
+              btnsFlag={true}
             />
-          );
-        })}
-      </div>
+          </div>
+        </Route>
+        <Redirect from="/" to="/mainPage/" />
+      </Switch>
     </div>
   );
 }
