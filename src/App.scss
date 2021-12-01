@@ -64,14 +64,12 @@
 .buttons {
   display: flex; 
   flex-direction: column;
+  width: 30%;
 
   button {
     font-size: 1rem;
+    height: 100%;
   }
-}
-
-.checked {
-  text-decoration-line: line-through;
 }
 
 .edit-btn {
@@ -79,6 +77,5 @@
 }
 
 .ok-undo {
-  width: 50%;
-  text-align: center;
+  width: 100%;
 }
